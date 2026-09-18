@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TypeSafe Playground</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1c1f24; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --ok:#16a34a; --warn:#d97706; --bar:#dbeafe; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", Segoe UI, sans-serif; background:var(--bg); color:var(--ink); }
+  header { background:#fff; border-bottom:1px solid var(--line); padding:14px 24px; display:flex; align-items:center; gap:14px; }
+  header h1 { font-size:18px; margin:0; }
+  .badge { font-size:12px; padding:3px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; }
+  .badge.mock { background:#fef3c7; color:#92400e; }
+  main { max-width:1200px; margin:0 auto; padding:20px; display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
+  @media (max-width: 900px) { main { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .card h2 { font-size:15px; margin:0 0 6px; }
+  .hint { color:var(--muted); font-size:13px; margin:0 0 10px; line-height:1.5; }
+  textarea { width:100%; min-height:150px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size:12.5px; border:1px solid var(--line); border-radius:8px; padding:10px; resize:vertical; }
+  select, button { font:inherit; }
+  select { padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+  button { padding:7px 12px; border:1px solid var(--line); border-radius:8px; background:#fff; cursor:pointer; }
+  button:hover { background:#f3f4f6; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; padding:10px 18px; }
+  button.primary:disabled { opacity:.5; cursor:wait; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:8px 0; }
+  .full { grid-column: 1 / -1; }
+  .prim { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:8px; }
+  @media (max-width: 700px) { .prim { grid-template-columns:1fr; } }
+  .prim div { border:1px solid var(--line); border-radius:8px; padding:10px; font-size:13px; line-height:1.5; }
+  .prim b { display:block; font-family:ui-monospace, monospace; color:var(--accent); }
+  .err { color:#b91c1c; font-size:13px; white-space:pre-wrap; }
+  .ans { border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:12px; }
+  .ans h3 { margin:0 0 4px; font-size:14px; display:flex; gap:8px; align-items:center; }
+  .ans .type { font-family:ui-monospace, monospace; font-size:11px; padding:2px 6px; border-radius:6px; background:#f3f4f6; color:#374151; }
+  .ans .q { color:var(--muted); font-size:12.5px; margin-bottom:8px; }
+  .bar { display:grid; grid-template-columns: 160px 1fr 56px; gap:8px; align-items:center; font-size:13px; margin:3px 0; }
+  .bar .lbl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .bar .trk { background:#f3f4f6; border-radius:4px; height:14px; overflow:hidden; }
+  .bar .fill { height:100%; background:var(--bar); }
+  .bar.sel .fill { background:var(--accent); }
+  .bar.sel .lbl { font-weight:700; }
+  .bar .num { text-align:right; font-variant-numeric: tabular-nums; }
+  .verdict { font-size:14px; margin:6px 0 8px; }
+  .verdict strong { font-size:16px; }
+  .meta { color:var(--muted); font-size:12px; margin-top:6px; }
+  details { margin-top:10px; } pre { background:#0f172a; color:#e2e8f0; padding:10px; border-radius:8px; font-size:12px; overflow:auto; max-height:360px; }
+  .legend { font-size:12px; color:var(--muted); margin-top:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TypeSafe Playground</h1>
+  <span id="status" class="badge">connecting…</span>
+  <span class="hint" style="margin:0">Jev 모델에 <b>타입이 정해진 질문</b>을 던지고 <b>확률이 붙은 답</b>을 받아 봅니다.</span>
+</header>
+
+<main>
+  <section class="card full">
+    <h2>이게 뭔가요?</h2>
+    <p class="hint">
+      ChatGPT처럼 문장을 생성하는 게 아닙니다. ① 판단할 대상(<b>state</b>: 텍스트 또는 JSON)을 주고, ② 답의 형태가 정해진 질문을 여러 개 붙이면,
+      ③ 각 질문마다 <b>정해진 형태의 답 + 확률</b>이 돌아옵니다. 그래서 답을 파싱할 필요 없이 코드에서 바로 <code>if p &gt; 0.7:</code> 처럼 쓸 수 있습니다.
+      질문 타입은 딱 세 가지입니다.
+    </p>
+    <div class="prim">
+      <div><b>noul</b> 예/아니오 질문. 답은 <i>"예"일 확률</i> 하나(0~1). 0.5 근처면 "중간"이 아니라 "반반"이라는 뜻.</div>
+      <div><b>choice</b> 내가 정한 라벨 중 하나 고르기. 선택된 라벨 + <i>모든 라벨의 확률</i>. 아무것도 안 맞을 때를 위해 <code>other</code> 라벨을 넣어 두는 게 좋습니다.</div>
+      <div><b>score</b> 내가 정한 순서 있는 루브릭(0단계, 1단계, …)에서의 <i>기대값</i>. 2.4처럼 정수 사이가 나올 수 있고, 단계별 확률도 함께 옵니다.</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>① State — 판단할 대상</h2>
+    <p class="hint">텍스트 한 덩어리도 되고, 아래처럼 필드가 나뉜 JSON도 됩니다. 질문에서 <code>`comment.text`</code>처럼 필드를 지칭할 수 있습니다.</p>
+    <div class="row">
+      <label>예제 불러오기 <select id="preset"></select></label>
+    </div>
+    <textarea id="state"></textarea>
+  </section>
+
+  <section class="card">
+    <h2>② Questions — 질문 (JSON)</h2>
+    <p class="hint">키(<code>"discipline"</code> 등)는 코드용 이름이고 모델에는 안 보냅니다. 질문 내용은 <code>instructions</code>에, 가능한 답은 <code>criteria</code>에 전부 씁니다.</p>
+    <div class="row">
+      <span class="hint" style="margin:0">템플릿 추가:</span>
+      <button onclick="addTemplate('noul')">+ noul</button>
+      <button onclick="addTemplate('choice')">+ choice</button>
+      <button onclick="addTemplate('score')">+ score</button>
+    </div>
+    <textarea id="questions" style="min-height:260px"></textarea>
+    <div id="qerr" class="err"></div>
+  </section>
+
+  <section class="card full">
+    <div class="row">
+      <button id="run" class="primary" onclick="run()">▶ 실행 (1 요청, 질문 N개 병렬)</button>
+      <label>model <select id="model"><option value="">jev-latest (기본)</option></select></label>
+      <span id="runmeta" class="meta"></span>
+    </div>
+    <div id="err" class="err"></div>
+    <div id="results"></div>
+    <details id="rawbox" style="display:none"><summary>원본 응답 JSON</summary><pre id="raw"></pre></details>
+  </section>
+</main>
+
+<script>
+const PRESETS = {
+  "선주 코멘트 분류 (조선)": {
+    state: {
+      contract_rules: [
+        "사양서에 명시된 항목은 계약가에 포함된 Builder 범위.",
+        "사양 초과 요구는 Owner's change: 비용·공정 영향을 견적하고 VO(Variation Order) 발행 후 시행.",
+        "오타 수정·확인 요청은 범위 변경이 아니며 비용 없음.",
+        "구조 스캔틀링·복원성·화물창 격납 시스템에 영향을 주는 변경은 선급 재승인 필요."
+      ],
+      comment: {
+        drawing: "H-1234-CG-012 Cargo Tank Dome Arrangement",
+        text: "Owner requires secondary barrier insulation thickness to be increased from 270 mm to 300 mm on all four tanks to guarantee BOR 0.085%/day instead of 0.10%/day as per spec.",
+        clause_ref: "Spec Part III 5.1.2"
+      },
+      spec_baseline_for_cited_clause: "Secondary barrier insulation 270 mm; guaranteed BOR 0.10 %/day."
+    },
+    questions: {
+      beyond_spec: { type: "noul",
+        instructions: "`comment.text`의 요구가 `spec_baseline_for_cited_clause`와 `contract_rules`상 Builder가 이미 제공해야 하는 범위를 넘어서는가? 오타 수정·확인 요청은 '아니오'로 본다.",
+        criteria: { true: "사양 기준선 대비 범위를 추가·상향·변경한다.", false: "기준선 안에 있다: 확인, 정정, 또는 이미 제공되는 항목." } },
+      class_reapproval: { type: "noul",
+        instructions: "`comment.text`를 시행하면 선급 재승인이 필요할 가능성이 높은가? `contract_rules`의 마지막 항목을 기준으로 판단.",
+        criteria: { true: "구조 스캔틀링, 복원성, 또는 화물창 격납 시스템을 변경한다.", false: "그 외의 변경이거나 변경이 아니다." } },
+      discipline: { type: "choice",
+        instructions: "`comment.text`와 `comment.drawing`으로 볼 때 이 코멘트의 기술 회신을 담당할 설계 부서는?",
+        criteria: { hull_structure: "강재 스캔틀링, 외판, 보강재, 기초, 구조해석", hull_outfitting: "갑판기계, 크레인, 거주구, 기관실 외 배관", machinery: "주/보조 기관, 청정기, 펌프, 압축기, 기관실 배치", electrical: "배전반, 케이블, 자동화, 조명", cargo_containment: "화물창, 단열, 2차 방벽, BOR, 화물 취급", naval_architecture: "복원성, 트림, 손상복원성, 성능 보증", other: "위 어느 것도 명확히 해당하지 않음" } },
+      impact: { type: "score",
+        instructions: "`comment.text`를 시행할 때 Builder의 비용·공정 영향을 평가하라.",
+        criteria: [ "없음: 오타 수정, 확인, 또는 통상 도면 개정에 흡수", "경미: 도면 재발행과 소량 자재 변경, 마일스톤 영향 없음", "보통: 1~4주 재작업, 신규 자재 발주, 또는 벤더 재설계", "중대: 4주 초과 재작업, 마일스톤 위험, 또는 선급 승인 설계 변경" ] },
+      response_type: { type: "choice",
+        instructions: "`contract_rules`와 `spec_baseline_for_cited_clause`를 고려할 때 Builder가 보내야 할 회신의 종류는?",
+        criteria: { accept_no_cost: "사양 범위 내이거나 단순 정정: 수용", quote_variation_order: "사양 초과: 원칙 수용하되 VO를 위한 비용·공정 견적 제시", reject_with_reason: "계약·규정에 반함: 기술적/계약적 사유로 거절", clarify_or_confirm: "질문 또는 확인 요청: 요청된 정보만 회신", other: "위 어느 것도 아님" } }
+    }
+  },
+  "고객 지원 티켓 (SDK README 예제)": {
+    state: "I was charged twice. Please fix this ASAP.",
+    questions: {
+      category: { type: "choice", instructions: "What is this ticket about?", criteria: { billing: null, technical: null, other: null } },
+      is_urgent: { type: "noul", instructions: "Is the sender asking for urgent handling?" },
+      severity: { type: "score", instructions: "How severe is the issue for the customer?", criteria: ["cosmetic", "inconvenient", "blocking", "financial loss"] }
+    }
+  },
+  "설계변경요청 ECR (trial/systemone_demo.py)": {
+    state: {
+      doc_type: "engineering_change_request", project: "H-1234 174K LNGC", ecr_no: "ECR-2026-0417",
+      title: "Cargo tank No.2 dome insulation thickness change",
+      body: "Owner requests increasing the secondary barrier insulation thickness on the No.2 tank dome from 270 mm to 300 mm to reduce BOR margin. Impact: hull outfitting drawings (3 sheets) reissue, ~2 weeks re-work on the dome trunk, material already on order — vendor lead time 6 weeks. Requested before block erection of DK-21 (scheduled in 5 weeks).",
+      requested_by: "Owner site team", stage: "erection"
+    },
+    questions: {
+      schedule_risk: { type: "noul", instructions: "Will this change likely delay the block erection milestone?", criteria: { true: "The change cannot be completed before the erection date without slipping it.", false: "The change can be absorbed within the current schedule." } },
+      owning_dept: { type: "choice", instructions: "Which department should own this ECR?", criteria: { hull_design: "Hull structure or hull outfitting drawing changes.", cargo_system: "Cargo containment, insulation, or BOR-related changes.", production: "Purely schedule/sequence changes with no drawing impact.", procurement: "Primarily a material or vendor issue.", other: "None of the above fits." } },
+      cost_impact: { type: "score", instructions: "Rate the cost impact of this ECR.", criteria: [ "Negligible: no re-work, no material change.", "Minor: drawing reissue only, < 1 week re-work.", "Moderate: re-work 1–4 weeks or material re-order.", "Major: re-work > 4 weeks, or affects a milestone." ] } }
+  }
+};
+const TEMPLATES = {
+  noul:   { type: "noul", instructions: "…가 사실인가? (예/아니오)", criteria: { true: "'예'인 상황 설명", false: "'아니오'인 상황 설명" } },
+  choice: { type: "choice", instructions: "…는 다음 중 무엇인가?", criteria: { label_a: "a 설명", label_b: "b 설명", other: "어느 것도 아님" } },
+  score:  { type: "score", instructions: "…의 정도를 평가하라.", criteria: ["0단계: 구체적 상황", "1단계: 구체적 상황", "2단계: 구체적 상황"] }
+};
+
+const $ = id => document.getElementById(id);
+const fmt = (o) => JSON.stringify(o, null, 2);
+
+function loadPreset(name) {
+  const p = PRESETS[name];
+  $("state").value = typeof p.state === "string" ? p.state : fmt(p.state);
+  $("questions").value = fmt(p.questions);
+  $("qerr").textContent = "";
+}
+function addTemplate(t) {
+  let q = {};
+  try { q = $("questions").value.trim() ? JSON.parse($("questions").value) : {}; } catch { $("qerr").textContent = "현재 JSON이 유효하지 않아 템플릿을 추가할 수 없습니다."; return; }
+  let name = t + "_1", i = 1; while (q[name]) name = t + "_" + (++i);
+  q[name] = TEMPLATES[t]; $("questions").value = fmt(q); $("qerr").textContent = "";
+}
+function parseState() {
+  const s = $("state").value.trim();
+  try { return JSON.parse(s); } catch { return s; }   // 유효한 JSON이 아니면 그냥 텍스트로 보냄
+}
+
+async function run() {
+  $("err").textContent = ""; $("qerr").textContent = "";
+  let questions;
+  try { questions = JSON.parse($("questions").value); } catch (e) { $("qerr").textContent = "질문 JSON 오류: " + e.message; return; }
+  const body = { state: parseState(), questions, model: $("model").value || null };
+  $("run").disabled = true; $("runmeta").textContent = "요청 중…";
+  try {
+    const r = await fetch("/api/evaluate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await r.json();
+    if (!r.ok) { $("err").textContent = `HTTP ${r.status}: ${data.error || data.detail || JSON.stringify(data)}`; $("runmeta").textContent = ""; return; }
+    render(data, questions);
+  } catch (e) { $("err").textContent = "요청 실패: " + e.message; }
+  finally { $("run").disabled = false; }
+}
+
+function bar(label, p, sel, extra) {
+  return `<div class="bar ${sel ? "sel" : ""}"><span class="lbl" title="${esc(extra || label)}">${esc(label)}</span><div class="trk"><div class="fill" style="width:${(p*100).toFixed(1)}%"></div></div><span class="num">${(p*100).toFixed(1)}%</span></div>`;
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const brief = v => v == null ? "" : typeof v === "string" ? v : JSON.stringify(v);
+
+function render(data, questions) {
+  const out = [];
+  for (const [name, a] of Object.entries(data.answers || {})) {
+    const q = questions[name] || {};
+    let body = "";
+    if (a.type === "noul") {
+      const p = a.noul;
+      body = `<div class="verdict">"예"일 확률 <strong>${(p*100).toFixed(1)}%</strong> ${p >= 0.5 ? "→ 예 쪽" : "→ 아니오 쪽"} ${Math.abs(p-0.5) < 0.15 ? "<span style='color:var(--warn)'>(반반에 가까움 — 사람 확인 권장)</span>" : ""}</div>`
+           + bar("true", p, p >= 0.5, brief(q.criteria?.true)) + bar("false", 1-p, p < 0.5, brief(q.criteria?.false));
+    } else if (a.type === "choice") {
+      body = `<div class="verdict">선택: <strong>${esc(a.choice)}</strong> <span class="meta">confidence ${(a.confidence*100).toFixed(1)}%</span></div>`
+           + Object.entries(a.probabilities).sort((x,y)=>y[1]-x[1]).map(([k,p]) => bar(k, p, k === a.choice, brief(q.criteria?.[k]))).join("");
+    } else if (a.type === "score") {
+      const n = Object.keys(a.legend).length - 1;
+      body = `<div class="verdict">기대 점수 <strong>${a.score.toFixed(2)}</strong> / ${n} <span class="meta">confidence ${(a.confidence*100).toFixed(1)}%</span></div>`
+           + Object.entries(a.probabilities).sort((x,y)=>+x[0]-+y[0]).map(([k,p]) => bar(`${k}: ${brief(a.legend[k]).slice(0,22)}`, p, Math.round(a.score) == +k, brief(a.legend[k]))).join("")
+           + `<div class="legend">막대는 각 단계일 확률, 굵은 항목은 기대값에 가장 가까운 단계.</div>`;
+    } else body = `<pre>${esc(fmt(a))}</pre>`;
+    out.push(`<div class="ans"><h3>${esc(name)} <span class="type">${a.type}</span></h3><div class="q">${esc(brief(q.instructions))}</div>${body}</div>`);
+  }
+  $("results").innerHTML = out.join("");
+  const u = data.usage || {};
+  $("runmeta").textContent = `${data._mock ? "⚠ MOCK 응답 (무작위) · " : ""}model ${data.model} · ${data._latency_ms} ms · tokens in ${u.input_tokens ?? "-"} / out ${u.output_tokens ?? "-"}`;
+  $("raw").textContent = fmt(data); $("rawbox").style.display = "";
+}
+
+(async () => {
+  for (const n of Object.keys(PRESETS)) { const o = document.createElement("option"); o.textContent = o.value = n; $("preset").appendChild(o); }
+  $("preset").onchange = e => loadPreset(e.target.value);
+  loadPreset(Object.keys(PRESETS)[0]);
+  try {
+    const s = await (await fetch("/api/status")).json();
+    const b = $("status"); b.textContent = s.mock ? "MOCK 모드 (키 없음, 무작위 답)" : `LIVE · ${s.base_url}`; b.className = "badge" + (s.mock ? " mock" : "");
+    const m = await (await fetch("/api/models")).json();
+    for (const x of (m.models || [])) { const o = document.createElement("option"); o.value = x.name; o.textContent = `${x.name} — ${x.description}`; $("model").appendChild(o); }
+  } catch (e) { $("status").textContent = "서버 상태 확인 실패"; }
+})();
+</script>
+</body>
+</html>

@@ -31,6 +31,18 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 - `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
 - `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
 
+## 웹 플레이그라운드 (가장 쉬운 시작점)
+
+```bash
+cp .env.example .env                 # 키 입력
+.venv/bin/python webapp/app.py       # → http://127.0.0.1:8000
+.venv/bin/python webapp/app.py --mock   # 키 없이 UI 만 둘러보기 (무작위 답)
+```
+
+브라우저에서 state 를 넣고 질문 JSON 을 고쳐 가며 실행하면 질문별로 확률 막대가 그려집니다.
+예제 3개(선주 코멘트 / 지원 티켓 / ECR)가 내장돼 있고, `+ noul / + choice / + score` 버튼으로 질문 템플릿을 추가할 수 있습니다.
+API 키는 서버(`webapp/app.py`)에만 있고 브라우저로는 가지 않습니다.
+
 ## 샘플 애플리케이션
 
 - [`samples/comment_triage/`](samples/comment_triage/README.md) — 선주 코멘트를 기술회신 / VO / 사람검토 트랙으로 라우팅. 코멘트당 1요청·5질문, 비동기 배치, 코드 측 정책 계층, CSV/MD 리포트. `--fixture` 로 오프라인 실행 가능.
