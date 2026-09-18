@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 uv.lock
+
+# sample outputs
+samples/*/out/

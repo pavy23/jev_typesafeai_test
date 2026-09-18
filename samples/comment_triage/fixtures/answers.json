@@ -1,0 +1,490 @@
+{
+  "OC-001": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "hull_outfitting",
+        "confidence": 0.86,
+        "probabilities": {
+          "hull_structure": 0.023,
+          "machinery": 0.023,
+          "electrical": 0.023,
+          "cargo_containment": 0.023,
+          "naval_architecture": 0.023,
+          "other": 0.023,
+          "hull_outfitting": 0.86
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.78
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.08
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.46,
+        "confidence": 0.55,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.02,
+          "1": 0.55,
+          "2": 0.38,
+          "3": 0.05
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "quote_variation_order",
+        "confidence": 0.72,
+        "probabilities": {
+          "reject_with_reason": 0.043,
+          "clarify_or_confirm": 0.043,
+          "other": 0.043,
+          "quote_variation_order": 0.72,
+          "accept_no_cost": 0.15
+        }
+      }
+    }
+  },
+  "OC-002": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "cargo_containment",
+        "confidence": 0.93,
+        "probabilities": {
+          "hull_structure": 0.012,
+          "hull_outfitting": 0.012,
+          "machinery": 0.012,
+          "electrical": 0.012,
+          "naval_architecture": 0.012,
+          "other": 0.012,
+          "cargo_containment": 0.93
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.95
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.88
+      },
+      "impact": {
+        "type": "score",
+        "score": 2.73,
+        "confidence": 0.75,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.02,
+          "2": 0.23,
+          "3": 0.75
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "quote_variation_order",
+        "confidence": 0.84,
+        "probabilities": {
+          "accept_no_cost": 0.04,
+          "reject_with_reason": 0.04,
+          "clarify_or_confirm": 0.04,
+          "other": 0.04,
+          "quote_variation_order": 0.84
+        }
+      }
+    }
+  },
+  "OC-003": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "electrical",
+        "confidence": 0.95,
+        "probabilities": {
+          "hull_structure": 0.008,
+          "hull_outfitting": 0.008,
+          "machinery": 0.008,
+          "cargo_containment": 0.008,
+          "naval_architecture": 0.008,
+          "other": 0.008,
+          "electrical": 0.95
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.03
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "impact": {
+        "type": "score",
+        "score": 0.08,
+        "confidence": 0.93,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.93,
+          "1": 0.06,
+          "2": 0.01,
+          "3": 0.0
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "accept_no_cost",
+        "confidence": 0.9,
+        "probabilities": {
+          "quote_variation_order": 0.025,
+          "reject_with_reason": 0.025,
+          "clarify_or_confirm": 0.025,
+          "other": 0.025,
+          "accept_no_cost": 0.9
+        }
+      }
+    }
+  },
+  "OC-004": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "machinery",
+        "confidence": 0.91,
+        "probabilities": {
+          "hull_structure": 0.015,
+          "hull_outfitting": 0.015,
+          "electrical": 0.015,
+          "cargo_containment": 0.015,
+          "naval_architecture": 0.015,
+          "other": 0.015,
+          "machinery": 0.91
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.9
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.15
+      },
+      "impact": {
+        "type": "score",
+        "score": 2.3,
+        "confidence": 0.6,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.05,
+          "2": 0.6,
+          "3": 0.35
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "quote_variation_order",
+        "confidence": 0.8,
+        "probabilities": {
+          "accept_no_cost": 0.05,
+          "reject_with_reason": 0.05,
+          "clarify_or_confirm": 0.05,
+          "other": 0.05,
+          "quote_variation_order": 0.8
+        }
+      }
+    }
+  },
+  "OC-005": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "hull_structure",
+        "confidence": 0.9,
+        "probabilities": {
+          "hull_outfitting": 0.017,
+          "machinery": 0.017,
+          "electrical": 0.017,
+          "cargo_containment": 0.017,
+          "naval_architecture": 0.017,
+          "other": 0.017,
+          "hull_structure": 0.9
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.06
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.2
+      },
+      "impact": {
+        "type": "score",
+        "score": 0.17,
+        "confidence": 0.85,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.85,
+          "1": 0.13,
+          "2": 0.02,
+          "3": 0.0
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "clarify_or_confirm",
+        "confidence": 0.88,
+        "probabilities": {
+          "accept_no_cost": 0.03,
+          "quote_variation_order": 0.03,
+          "reject_with_reason": 0.03,
+          "other": 0.03,
+          "clarify_or_confirm": 0.88
+        }
+      }
+    }
+  },
+  "OC-006": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "naval_architecture",
+        "confidence": 0.92,
+        "probabilities": {
+          "hull_structure": 0.013,
+          "hull_outfitting": 0.013,
+          "machinery": 0.013,
+          "electrical": 0.013,
+          "cargo_containment": 0.013,
+          "other": 0.013,
+          "naval_architecture": 0.92
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.85
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.7
+      },
+      "impact": {
+        "type": "score",
+        "score": 2.25,
+        "confidence": 0.55,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.0,
+          "1": 0.1,
+          "2": 0.55,
+          "3": 0.35
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "quote_variation_order",
+        "confidence": 0.62,
+        "probabilities": {
+          "accept_no_cost": 0.053,
+          "clarify_or_confirm": 0.053,
+          "other": 0.053,
+          "quote_variation_order": 0.62,
+          "reject_with_reason": 0.22
+        }
+      }
+    }
+  },
+  "OC-007": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "hull_outfitting",
+        "confidence": 0.88,
+        "probabilities": {
+          "hull_structure": 0.02,
+          "machinery": 0.02,
+          "electrical": 0.02,
+          "cargo_containment": 0.02,
+          "naval_architecture": 0.02,
+          "other": 0.02,
+          "hull_outfitting": 0.88
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.82
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.02
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.11,
+        "confidence": 0.8,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.8,
+          "2": 0.14,
+          "3": 0.01
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "reject_with_reason",
+        "confidence": 0.48,
+        "probabilities": {
+          "accept_no_cost": 0.033,
+          "clarify_or_confirm": 0.033,
+          "other": 0.033,
+          "reject_with_reason": 0.48,
+          "quote_variation_order": 0.42
+        }
+      }
+    }
+  },
+  "OC-008": {
+    "model": "jev-latest",
+    "usage": {
+      "billing_units": 1,
+      "input_tokens": 480,
+      "output_tokens": 40
+    },
+    "answers": {
+      "discipline": {
+        "type": "choice",
+        "choice": "hull_structure",
+        "confidence": 0.55,
+        "probabilities": {
+          "hull_outfitting": 0.02,
+          "electrical": 0.02,
+          "cargo_containment": 0.02,
+          "naval_architecture": 0.02,
+          "other": 0.02,
+          "hull_structure": 0.55,
+          "machinery": 0.35
+        }
+      },
+      "beyond_spec": {
+        "type": "noul",
+        "noul": 0.45
+      },
+      "class_reapproval": {
+        "type": "noul",
+        "noul": 0.52
+      },
+      "impact": {
+        "type": "score",
+        "score": 1.53,
+        "confidence": 0.45,
+        "legend": {
+          "0": "None",
+          "1": "Minor",
+          "2": "Moderate",
+          "3": "Major"
+        },
+        "probabilities": {
+          "0": 0.05,
+          "1": 0.45,
+          "2": 0.42,
+          "3": 0.08
+        }
+      },
+      "response_type": {
+        "type": "choice",
+        "choice": "clarify_or_confirm",
+        "confidence": 0.44,
+        "probabilities": {
+          "accept_no_cost": 0.053,
+          "reject_with_reason": 0.053,
+          "other": 0.053,
+          "clarify_or_confirm": 0.44,
+          "quote_variation_order": 0.4
+        }
+      }
+    }
+  }
+}

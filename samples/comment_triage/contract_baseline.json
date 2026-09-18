@@ -1,0 +1,18 @@
+{
+  "project": "H-1234 174,000 m3 LNG carrier (fictional sample data)",
+  "contract_rule_summary": [
+    "Items explicitly written in the Contract Specification are Builder's scope at contract price.",
+    "Requests beyond the Specification are Owner's changes: Builder quotes cost and schedule impact; a Variation Order (VO) is issued before implementation.",
+    "Clarifications, typos and confirmations do not change scope and carry no cost.",
+    "Any change affecting structural scantlings, stability, or cargo containment requires re-approval by the Classification Society."
+  ],
+  "spec_baseline": {
+    "Spec Part I 1.4":   "Damage stability per IGC Code only.",
+    "Spec Part II 2.1":  "Scantlings per Class rules including rule corrosion additions.",
+    "Spec Part II 3.2.4": "One provision crane, port side, SWL 5 t.",
+    "Spec Part III 5.1.2": "Secondary barrier insulation 270 mm; guaranteed BOR 0.10 %/day.",
+    "Spec Part III 6.2": "Cargo compressor foundations per Builder's standard, vibration analysis by Builder.",
+    "Spec Part IV 2.7":  "One HFO purifier for auxiliary engines plus duplex filter.",
+    "Spec Part V 4.3":   "Mess room furniture: Builder's standard laminate finish; 'similar equipment' clause covers make substitution of equal quality, not material upgrade."
+  }
+}

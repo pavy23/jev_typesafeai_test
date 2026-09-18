@@ -1,0 +1,50 @@
+[
+  {
+    "id": "OC-001",
+    "drawing": "H-1234-GA-001 General Arrangement",
+    "text": "Please relocate the provision crane from port to starboard side to suit our standard port-side berthing at the Sabine Pass terminal.",
+    "clause_ref": "Spec Part II 3.2.4"
+  },
+  {
+    "id": "OC-002",
+    "drawing": "H-1234-CG-012 Cargo Tank Dome Arrangement",
+    "text": "Owner requires secondary barrier insulation thickness to be increased from 270 mm to 300 mm on all four tanks to guarantee BOR 0.085%/day instead of 0.10%/day as per spec.",
+    "clause_ref": "Spec Part III 5.1.2"
+  },
+  {
+    "id": "OC-003",
+    "drawing": "H-1234-EL-034 Main Switchboard Single Line",
+    "text": "Typo in breaker tag: 'ACB-2B' should read 'ACB-2A' to match the cable schedule.",
+    "clause_ref": "-"
+  },
+  {
+    "id": "OC-004",
+    "drawing": "H-1234-MA-021 Engine Room Arrangement",
+    "text": "Add a second, fully redundant HFO purifier for the auxiliary engines. Spec calls for one purifier plus a standby filter; we consider this insufficient for our trading pattern.",
+    "clause_ref": "Spec Part IV 2.7"
+  },
+  {
+    "id": "OC-005",
+    "drawing": "H-1234-HS-008 Midship Section",
+    "text": "Please confirm that the hopper tank sloping plate thickness (16 mm) includes the 3 mm corrosion addition required by the class rules for ballast tanks.",
+    "clause_ref": "Spec Part II 2.1"
+  },
+  {
+    "id": "OC-006",
+    "drawing": "H-1234-NA-002 Trim & Stability Booklet",
+    "text": "Damage stability shall be demonstrated for a 2-compartment flooding case in addition to the IGC Code requirement, per our internal fleet standard.",
+    "clause_ref": "Spec Part I 1.4"
+  },
+  {
+    "id": "OC-007",
+    "drawing": "H-1234-HO-045 Accommodation Deck Plan",
+    "text": "Change the crew mess table finish from laminate to solid teak. Cost to be borne by Builder as this is a 'similar equipment' item.",
+    "clause_ref": "Spec Part V 4.3"
+  },
+  {
+    "id": "OC-008",
+    "drawing": "H-1234-MA-030 Cargo Compressor Room",
+    "text": "The HD compressor foundation shows a 12 mm doubler under the frame; our vibration consultant recommends a 20 mm insert plate instead. Please advise structural impact.",
+    "clause_ref": "Spec Part III 6.2"
+  }
+]

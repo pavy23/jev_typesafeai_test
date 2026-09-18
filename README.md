@@ -31,6 +31,10 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 - `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
 - `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
 
+## 샘플 애플리케이션
+
+- [`samples/comment_triage/`](samples/comment_triage/README.md) — 선주 코멘트를 기술회신 / VO / 사람검토 트랙으로 라우팅. 코멘트당 1요청·5질문, 비동기 배치, 코드 측 정책 계층, CSV/MD 리포트. `--fixture` 로 오프라인 실행 가능.
+
 ## 파일
 
 - `trial/systemone_demo.py` — 조선소 설계변경요청(ECR)을 state 로 넣고 세 가지 타입 질문을 한 번에 묻는 예제
