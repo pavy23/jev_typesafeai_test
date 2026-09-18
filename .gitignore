@@ -1,0 +1,11 @@
+# secrets — never commit real keys
+.env
+.env.*
+!.env.example
+
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+uv.lock

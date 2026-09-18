@@ -1,0 +1,17 @@
+[project]
+name = "jev-typesafeai-trial"
+version = "0.1.0"
+description = "Trial harness for the TypeSafe AI System One API (jev model)"
+requires-python = ">=3.10"
+dependencies = [
+    "typesafe-sdk>=0.6.0",
+    "python-dotenv>=1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
