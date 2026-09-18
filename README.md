@@ -79,6 +79,29 @@ SDK 의 wire 스키마(`_schemas/models.py`)는 `https://api.typesafe.ai/openapi
 - SDK 기본값: timeout 10 s, 재시도 2회(408/429/5xx, `Retry-After` 존중)
 - 공식 문서: https://docs.typesafe.ai/api , https://docs.typesafe.ai/sdk/python/
 
+## 나중에 배포할 때
+
+이 앱의 무게중심은 **Python 서버**(키를 들고 TypeSafe 를 대신 호출)라, 서버를 그대로 올릴 수 있는 곳을 고릅니다.
+
+| 상황 | 선택 |
+|---|---|
+| 지금 코드 그대로, 가장 빨리 | **Render** (또는 Railway, Fly.io). 무료 인스턴스는 15분 유휴 후 잠들고 첫 접속에 ~1분 |
+| 회사 인프라(AWS/Azure/사내 k8s) | **Dockerfile** 추가 → 컨테이너로. 이식성 최고 |
+| 프론트를 크게 키우고 JS 팀 중심 | 그때 Netlify/Vercel + JS 백엔드(`@typesafe-ai/sdk`)로 재작성 |
+
+- **Netlify** 는 정적 호스팅 + JS/Go 서버리스 함수라 Python 서버를 그대로 못 올립니다 — 백엔드를 TS 로 다시 짜야 함.
+- **Vercel Hobby(무료)** 는 비상업 용도 제한이 있으니 회사 업무면 약관 확인.
+- 공통: 키는 플랫폼 secret 으로(`TYPESAFE_API_KEY`), 접근 제어는 `PLAYGROUND_PASSWORD`(시연용 Basic auth) → 사내 SSO/Cloudflare Access 로 교체,
+  응답의 `usage` 토큰을 기록해 비용 추적.
+
+## 현재 상태 / 다음 할 일
+
+- [x] API 계약 확인, SDK 기반 예제·샘플·웹 플레이그라운드, 오프라인 테스트 10건
+- [x] 로컬 런처(`run.bat` / `run.sh`)로 실행 경로 통일
+- [ ] 실제 키로 첫 호출 → `./run.sh triage --record` 로 fixture 를 실제 응답으로 교체
+- [ ] 실제 분포를 보고 `samples/comment_triage/triage.py` 의 `T_*` 임계값·질문 문구 조정
+- [ ] 저장소 Private 전환 (Settings → Danger Zone), API 키 재발급
+
 ## 왜 로컬인가 (다른 방법을 검토한 기록)
 
 - **정적 페이지(GitHub Pages 등)**: 불가. `api.typesafe.ai` 가 브라우저 origin 의 CORS preflight 에 `400 "Disallowed CORS origin"` 을
