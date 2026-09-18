@@ -1,7 +1,7 @@
 {
   "name": "TypeSafe playground",
   "image": "mcr.microsoft.com/devcontainers/python:3.11",
-  "postCreateCommand": "pip install --user -e . && pip install --user pytest",
+  "postCreateCommand": "pip install --user -r requirements.txt",
   "postStartCommand": "bash .devcontainer/start.sh",
   "forwardPorts": [8000],
   "portsAttributes": {

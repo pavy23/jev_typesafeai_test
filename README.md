@@ -13,7 +13,7 @@ System One은 LLM처럼 자유 텍스트를 생성하는 대신, 입력(**state*
 ## 빠른 시작
 
 ```bash
-uv venv .venv && uv pip install --python .venv/bin/python -e . --group dev   # 또는 pip install typesafe-sdk python-dotenv pytest
+uv venv .venv && uv pip install --python .venv/bin/python -r requirements.txt   # 또는 python -m venv .venv && .venv/bin/pip install -r requirements.txt
 cp .env.example .env            # TYPESAFE_API_KEY 를 채움 (.env 는 gitignore 됨)
 
 .venv/bin/python trial/systemone_demo.py --dry-run   # 전송될 JSON 만 출력 (네트워크 없음)
@@ -31,37 +31,23 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 - `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
 - `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
 
-## 브라우저에서 바로 써보기 — 2가지 방법
-
-| | 클릭하면 | 비공개? | 키 위치 | 비고 |
-|---|---|---|---|---|
-| **A. Render** (권장) | 바로 웹페이지 (첫 접속 시 ~1분 깨어남) | 비밀번호 로그인 | 서버 | Render 계정(GitHub 로그인) 필요, 무료 |
-| **B. Codespaces** | VS Code → 8000 포트 탭 | 소유자만 | Codespaces secret | 계정 불필요, 무료 120h/월 |
-
-### A. Render — 한 번 배포하면 URL 하나로 접속
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/pavy23/jev_typesafeai_test)
-
-1. 버튼 클릭 → GitHub 로 Render 로그인/가입 → 저장소 접근 허용.
-2. 배포 화면에서 두 값을 입력: `TYPESAFE_API_KEY`(키), `PLAYGROUND_PASSWORD`(아무 비밀번호). `render.yaml` 이 나머지를 채웁니다.
-3. 3~5분 뒤 `https://typesafe-playground-xxxx.onrender.com` 생성. 접속하면 브라우저 로그인창 → 아이디 아무거나, 비밀번호는 2번 값.
-
-무료 인스턴스는 15분 유휴 후 잠들고 다음 접속 때 ~1분 걸려 깹니다. 브랜치 push 마다 자동 재배포.
-
-### 왜 GitHub Pages(서버 없는 정적 페이지)는 안 되나
-
-GitHub Actions 러너에서 직접 확인했습니다(`.github/workflows/cors-check.yml`, Actions 탭에서 재실행 가능):
-`Origin: https://pavy23.github.io` 로 보낸 CORS preflight 에 `api.typesafe.ai` 가 **`HTTP 400 "Disallowed CORS origin"`** 을 돌려주고
-`access-control-allow-origin` 헤더가 없습니다(허용 헤더 목록에 `X-Dashboard-JWT` 가 있는 것으로 보아 TypeSafe 자체 대시보드 origin 만 허용).
-즉 **브라우저가 API 를 직접 부를 수 없고 반드시 서버를 거쳐야** 합니다 — TypeSafe 스킬 문서의 "credentials server-side" 지침과 같은 결론입니다.
-
-### B. GitHub Codespaces
+## 브라우저에서 바로 써보기 — GitHub Codespaces
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavy23/jev_typesafeai_test?quickstart=1&ref=claude/typesafeai-trial-vt2wg9)
 
-1. **키 등록(1회)**: GitHub → Settings → Codespaces → Secrets → `TYPESAFE_API_KEY`, 이 저장소에 접근 허용.
-2. 배지 클릭 → 1~2분 뒤 브라우저 VS Code. 우하단 팝업 *"port 8000 is available"* → **Open in Browser** (놓쳤으면 하단 PORTS 탭 → 8000 → 🌐).
-3. 키가 없으면 MOCK 모드로 뜨며 상단에 안내가 나옵니다. 키를 넣은 뒤 `F1 → Codespaces: Rebuild Container`.
+설치 없이 GitHub 안에서 서버를 띄웁니다. 포워딩 포트는 기본 **Private**(Codespace 소유자만 접근)이라 저장소를 비공개로 두면 완전히 비공개인 웹입니다.
+
+1. **키 등록(1회)**: GitHub 프로필 → Settings → **Codespaces** → Secrets → *New secret* → 이름 `TYPESAFE_API_KEY`, Repository access 에 이 저장소 체크.
+2. 위 배지 클릭 → 1~2분 뒤 브라우저 안 VS Code. `.devcontainer/` 가 의존성을 설치하고 8000 포트에 플레이그라운드를 자동으로 띄웁니다.
+3. 우하단 팝업 *"Your application running on port 8000 is available"* → **Open in Browser**. 놓쳤으면 하단 **PORTS** 탭 → `8000` 행 → 🌐 아이콘.
+4. 키가 없으면 MOCK 모드(무작위 답)로 뜨고 상단에 노란 안내가 나옵니다. 키를 넣은 뒤 `F1 → Codespaces: Rebuild Container`.
+
+탭을 닫아도 Codespace 는 살아 있고(유휴 30분 후 자동 정지), 다시 열면 서버가 자동 재시작됩니다. 무료 계정은 월 120 core-hours.
+정지/삭제는 https://github.com/codespaces 에서.
+
+> 왜 GitHub Pages(정적 페이지)는 안 되나: GitHub Actions 러너에서 확인한 결과(`.github/workflows/cors-check.yml`)
+> `api.typesafe.ai` 가 브라우저 origin 에 `400 "Disallowed CORS origin"` 을 돌려줍니다. 브라우저 직접 호출은 불가하고 서버가 필요합니다.
+> URL 하나로 접속하는 대안은 Render (`render.yaml`, https://render.com/deploy?repo=https://github.com/pavy23/jev_typesafeai_test).
 
 ## 로컬에서 실행
 

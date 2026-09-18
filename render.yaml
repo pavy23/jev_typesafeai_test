@@ -5,7 +5,7 @@ services:
     name: typesafe-playground
     runtime: python
     plan: free
-    buildCommand: pip install -e .
+    buildCommand: pip install -r requirements.txt
     startCommand: python webapp/app.py --auto --host 0.0.0.0
     healthCheckPath: /api/status
     envVars:
