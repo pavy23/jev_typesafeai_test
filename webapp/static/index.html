@@ -57,6 +57,14 @@
 </header>
 
 <main>
+  <section id="mockhelp" class="card full" hidden style="border-color:#f59e0b;background:#fffbeb">
+    <h2>지금은 MOCK 모드입니다 — 답이 무작위로 나옵니다</h2>
+    <p class="hint" style="margin:0">
+      실제 Jev 답을 보려면 서버에 <code>TYPESAFE_API_KEY</code>가 필요합니다.
+      <b>Codespaces</b>라면: GitHub → Settings → Codespaces → <b>Secrets</b>에 <code>TYPESAFE_API_KEY</code>를 추가하고 이 저장소에 연결한 뒤,
+      Codespace를 <b>Rebuild</b>(또는 Stop 후 다시 Start) 하세요. <b>로컬</b>이라면 <code>.env</code>에 넣고 서버를 다시 띄우세요.
+    </p>
+  </section>
   <section class="card full">
     <h2>이게 뭔가요?</h2>
     <p class="hint">
@@ -240,7 +248,8 @@ function render(data, questions) {
   loadPreset(Object.keys(PRESETS)[0]);
   try {
     const s = await (await fetch("/api/status")).json();
-    const b = $("status"); b.textContent = s.mock ? "MOCK 모드 (키 없음, 무작위 답)" : `LIVE · ${s.base_url}`; b.className = "badge" + (s.mock ? " mock" : "");
+    const b = $("status"); b.textContent = s.mock ? "MOCK 모드 — 키 없음, 답은 무작위" : `LIVE · ${s.base_url}`;
+    if (s.mock) $("mockhelp").hidden = false; b.className = "badge" + (s.mock ? " mock" : "");
     const m = await (await fetch("/api/models")).json();
     for (const x of (m.models || [])) { const o = document.createElement("option"); o.value = x.name; o.textContent = `${x.name} — ${x.description}`; $("model").appendChild(o); }
   } catch (e) { $("status").textContent = "서버 상태 확인 실패"; }

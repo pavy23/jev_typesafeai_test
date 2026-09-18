@@ -1,0 +1,19 @@
+{
+  "name": "TypeSafe playground",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "postCreateCommand": "pip install --user -e . && pip install --user pytest",
+  "postStartCommand": "bash .devcontainer/start.sh",
+  "forwardPorts": [8000],
+  "portsAttributes": {
+    "8000": { "label": "TypeSafe playground", "onAutoForward": "openBrowser" }
+  },
+  "secrets": {
+    "TYPESAFE_API_KEY": {
+      "description": "TypeSafe AI API key (from your TypeSafe dashboard). Without it the playground runs in MOCK mode with random answers.",
+      "documentationUrl": "https://docs.typesafe.ai/api"
+    }
+  },
+  "customizations": {
+    "vscode": { "extensions": ["ms-python.python"] }
+  }
+}

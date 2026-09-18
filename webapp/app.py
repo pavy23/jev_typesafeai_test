@@ -6,6 +6,7 @@ TypeSafe with TYPESAFE_API_KEY from the environment / .env (keep credentials ser
 Run:
   python webapp/app.py            # http://127.0.0.1:8000  (needs TYPESAFE_API_KEY)
   python webapp/app.py --mock     # no key, no network: fake answers so you can explore the UI
+  python webapp/app.py --auto     # live if TYPESAFE_API_KEY is set, otherwise mock (used by Codespaces)
 """
 
 from __future__ import annotations
@@ -120,10 +121,11 @@ def _mock_answers(questions: dict[str, dict[str, Any]], model: str) -> dict[str,
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mock", action="store_true", help="fake answers, no API key or network needed")
+    ap.add_argument("--auto", action="store_true", help="live when TYPESAFE_API_KEY is set, else mock")
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=8000)
     a = ap.parse_args()
-    if a.mock:
+    if a.mock or (a.auto and not os.environ.get("TYPESAFE_API_KEY")):
         os.environ["TYPESAFE_MOCK"] = "1"
         MOCK = True
     elif not os.environ.get("TYPESAFE_API_KEY"):

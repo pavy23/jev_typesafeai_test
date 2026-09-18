@@ -31,7 +31,22 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 - `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
 - `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
 
-## 웹 플레이그라운드 (가장 쉬운 시작점)
+## 브라우저에서 바로 써보기 — GitHub Codespaces
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavy23/jev_typesafeai_test?quickstart=1&ref=claude/typesafeai-trial-vt2wg9)
+
+설치 없이 GitHub 안에서 실행하는 방법입니다. 포트는 기본이 **Private**(Codespace 소유자만 접근)이라 저장소가 비공개면 완전히 비공개인 웹입니다.
+
+1. **키 등록(1회)**: GitHub → Settings → Codespaces → Secrets → *New secret* → 이름 `TYPESAFE_API_KEY`, 이 저장소에 접근 허용.
+   (배지로 만들 때 "recommended secrets" 입력칸이 뜨면 거기 넣어도 됩니다.)
+2. 위 배지를 클릭 → Codespace 생성. `.devcontainer/`가 의존성 설치 후 플레이그라운드를 8000 포트에 자동으로 띄우고 브라우저 탭을 엽니다.
+3. 키가 없으면 MOCK 모드(무작위 답)로 뜨고 화면 상단에 안내가 나옵니다. 키를 넣은 뒤 Codespace를 Rebuild 하면 LIVE 로 바뀝니다.
+
+탭을 닫아도 Codespace는 살아 있고(유휴 30분 후 자동 정지), 다시 열면 `postStartCommand`가 서버를 재시작합니다.
+무료 계정은 월 120 core-hours 까지 무료입니다 — 안 쓸 때는 Stop 해두세요.
+
+## 로컬에서 실행
+
 
 ```bash
 cp .env.example .env                 # 키 입력
@@ -53,6 +68,8 @@ API 키는 서버(`webapp/app.py`)에만 있고 브라우저로는 가지 않습
 - `trial/raw_http.sh` — 동일 요청의 순수 HTTP(curl) 버전
 - `tests/test_mock_systemone.py` — `/v1/systemone` 로컬 mock 으로 요청 스키마·응답 파싱을 검증
 - `.env.example` — 환경변수 템플릿. **실제 키는 절대 커밋하지 않습니다.**
+- `.devcontainer/` — Codespaces 설정: Python 3.11 이미지, 의존성 설치, 8000 포트 자동 포워딩, 추천 secret `TYPESAFE_API_KEY`
+- `webapp/` — FastAPI 백엔드 + 단일 HTML 플레이그라운드
 
 ## 검증된 API 계약 (출처)
 
