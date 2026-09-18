@@ -49,18 +49,25 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 > `api.typesafe.ai` 가 브라우저 origin 에 `400 "Disallowed CORS origin"` 을 돌려줍니다. 브라우저 직접 호출은 불가하고 서버가 필요합니다.
 > URL 하나로 접속하는 대안은 Render (`render.yaml`, https://render.com/deploy?repo=https://github.com/pavy23/jev_typesafeai_test).
 
-## 로컬에서 실행
+## 로컬에서 실행 (가장 단순)
 
+Python 3.10+ 만 있으면 됩니다. 계정·호스팅·CORS 전부 무관하고, 내 PC 안에서만 돌아 자연히 비공개입니다.
 
 ```bash
-cp .env.example .env                 # 키 입력
-.venv/bin/python webapp/app.py       # → http://127.0.0.1:8000
-.venv/bin/python webapp/app.py --mock   # 키 없이 UI 만 둘러보기 (무작위 답)
+git clone https://github.com/pavy23/jev_typesafeai_test && cd jev_typesafeai_test
+./run.sh          # macOS / Linux   (Windows 는 run.bat 더블클릭)
 ```
 
-브라우저에서 state 를 넣고 질문 JSON 을 고쳐 가며 실행하면 질문별로 확률 막대가 그려집니다.
-예제 3개(선주 코멘트 / 지원 티켓 / ECR)가 내장돼 있고, `+ noul / + choice / + score` 버튼으로 질문 템플릿을 추가할 수 있습니다.
-API 키는 서버(`webapp/app.py`)에만 있고 브라우저로는 가지 않습니다.
+첫 실행에서 키를 한 번 물어보고 `.env` 에 저장(gitignore)한 뒤, 의존성을 설치하고 브라우저를 엽니다. 이후엔 같은 명령으로 바로 뜹니다.
+수동으로 하려면:
+
+```bash
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
+cp .env.example .env                       # TYPESAFE_API_KEY 입력
+.venv/bin/python webapp/app.py --open      # → http://127.0.0.1:8000
+.venv/bin/python webapp/app.py --mock      # 키 없이 UI 만 둘러보기 (무작위 답)
+.venv/bin/python -m pytest                 # 오프라인 테스트
+```
 
 ## 샘플 애플리케이션
 
