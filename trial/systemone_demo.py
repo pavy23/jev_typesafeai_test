@@ -66,6 +66,7 @@ QUESTIONS = {
             "cargo_system": "Cargo containment, insulation, or BOR-related changes.",
             "production": "Purely schedule/sequence changes with no drawing impact.",
             "procurement": "Primarily a material or vendor issue.",
+            "other": "None of the above fits.",
         },
     ),
     # score: ordered rubric, index 0 = first entry. Returns an expected value, so it can
@@ -107,6 +108,16 @@ def run(client: TypeSafeClient, model: str | None) -> None:
     for name, a in response.scores.items():
         probs = ", ".join(f"{k}={v:.2f}" for k, v in sorted(a.probabilities.items()))
         print(f"[score]  {name}: {a.score:.2f} / {len(a.legend) - 1} (confidence={a.confidence:.2f})  [{probs}]")
+
+    # Policy lives in code, separate from the judgments, so thresholds can change without re-running
+    # inference. These numbers are placeholders — tune them on your own ECR history.
+    risk = response.nouls["schedule_risk"].noul
+    cost = response.scores["cost_impact"]
+    dept = response.choices["owning_dept"]
+    escalate = risk >= 0.6 or cost.score >= 2.5 or dept.confidence < 0.5 or dept.choice == "other"
+    print()
+    print(f"policy: {'ESCALATE to change board' if escalate else 'auto-route to ' + dept.choice}"
+          f"  (risk={risk:.2f}, cost={cost.score:.2f}, dept_conf={dept.confidence:.2f})")
 
     # Raw payload, useful while you learn the response shape.
     print("\n--- raw response ---")

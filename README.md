@@ -24,6 +24,13 @@ cp .env.example .env            # TYPESAFE_API_KEY 를 채움 (.env 는 gitignor
 
 SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 
+## Claude Code 플러그인 / 스킬
+
+공식 TypeSafe 에이전트 스킬(`typesafe@typesafe-ai`, [typesafe-ai/skills](https://github.com/typesafe-ai/skills))을 두 가지 방식으로 연결해 두었습니다.
+
+- `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
+- `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
+
 ## 파일
 
 - `trial/systemone_demo.py` — 조선소 설계변경요청(ECR)을 state 로 넣고 세 가지 타입 질문을 한 번에 묻는 예제
