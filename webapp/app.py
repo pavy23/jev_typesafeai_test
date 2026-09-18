@@ -12,16 +12,18 @@ Run:
 from __future__ import annotations
 
 import argparse
+import base64
 import os
 import random
+import secrets
 import time
 from pathlib import Path
 from typing import Any
 
 import uvicorn
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel
 from typesafe_sdk import AsyncTypeSafeClient, TypeSafeAPIError, TypeSafeError
 
@@ -30,6 +32,28 @@ STATIC = Path(__file__).parent / "static"
 MOCK = os.environ.get("TYPESAFE_MOCK") == "1"
 
 app = FastAPI(title="TypeSafe playground")
+
+
+@app.middleware("http")
+async def password_gate(request: Request, call_next):
+    """When PLAYGROUND_PASSWORD is set (hosted deployments), require it via HTTP Basic auth.
+
+    The browser shows its own login prompt; any username is accepted. Without the variable
+    (local / Codespaces, where the port itself is private) nothing is asked.
+    """
+    expected = os.environ.get("PLAYGROUND_PASSWORD")
+    if expected:
+        header = request.headers.get("authorization", "")
+        ok = False
+        if header.startswith("Basic "):
+            try:
+                _, _, given = base64.b64decode(header[6:]).decode().partition(":")
+                ok = secrets.compare_digest(given, expected)
+            except Exception:  # noqa: BLE001 - malformed header is just "not authenticated"
+                ok = False
+        if not ok:
+            return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="TypeSafe playground"'})
+    return await call_next(request)
 
 
 class EvaluateRequest(BaseModel):
@@ -123,12 +147,13 @@ if __name__ == "__main__":
     ap.add_argument("--mock", action="store_true", help="fake answers, no API key or network needed")
     ap.add_argument("--auto", action="store_true", help="live when TYPESAFE_API_KEY is set, else mock")
     ap.add_argument("--host", default="127.0.0.1")
-    ap.add_argument("--port", type=int, default=8000)
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8000")))
     a = ap.parse_args()
     if a.mock or (a.auto and not os.environ.get("TYPESAFE_API_KEY")):
         os.environ["TYPESAFE_MOCK"] = "1"
         MOCK = True
     elif not os.environ.get("TYPESAFE_API_KEY"):
         raise SystemExit("TYPESAFE_API_KEY is not set. Put it in .env, or run with --mock to explore the UI without a key.")
-    print(f"TypeSafe playground -> http://{a.host}:{a.port}  ({'MOCK answers' if MOCK else 'live API'})")
+    gate = " · password required" if os.environ.get("PLAYGROUND_PASSWORD") else ""
+    print(f"TypeSafe playground -> http://{a.host}:{a.port}  ({'MOCK answers' if MOCK else 'live API'}{gate})")
     uvicorn.run(app, host=a.host, port=a.port, log_level="warning")
