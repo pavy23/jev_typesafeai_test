@@ -57,17 +57,6 @@
 </header>
 
 <main>
-  <section id="direct" class="card full" hidden style="border-color:#2563eb;background:#eff6ff">
-    <h2>직접 호출 모드 — 이 페이지는 정적 호스팅(GitHub Pages 등)에서 열렸습니다</h2>
-    <p class="hint">서버가 없으므로 브라우저가 <code>api.typesafe.ai</code>를 직접 호출합니다. 키는 <b>이 브라우저의 localStorage에만</b> 저장되고 어디에도 전송되지 않습니다(TypeSafe 제외). 공용 PC에서는 사용 후 "키 지우기"를 누르세요.</p>
-    <div class="row">
-      <input id="apikey" type="password" placeholder="TYPESAFE_API_KEY (apikey_…)" style="flex:1;min-width:260px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,monospace">
-      <input id="baseurl" value="https://api.typesafe.ai" style="width:220px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font-family:ui-monospace,monospace">
-      <button onclick="saveKey()">저장</button>
-      <button onclick="clearKey()">키 지우기</button>
-    </div>
-    <div id="directerr" class="err"></div>
-  </section>
   <section id="mockhelp" class="card full" hidden style="border-color:#f59e0b;background:#fffbeb">
     <h2>지금은 MOCK 모드입니다 — 답이 무작위로 나옵니다</h2>
     <p class="hint" style="margin:0">
@@ -189,46 +178,16 @@ const TEMPLATES = {
 const $ = id => document.getElementById(id);
 const fmt = (o) => JSON.stringify(o, null, 2);
 
-// Transport: "server" (FastAPI proxy keeps the key) or "direct" (static hosting, browser holds the key).
-let MODE = "server";
-const store = { get: k => { try { return localStorage.getItem(k) || ""; } catch { return ""; } },
-                set: (k, v) => { try { localStorage.setItem(k, v); } catch {} },
-                del: k => { try { localStorage.removeItem(k); } catch {} } };
-function saveKey() {
-  store.set("typesafe_api_key", $("apikey").value.trim()); store.set("typesafe_base_url", $("baseurl").value.trim().replace(/\/$/, ""));
-  $("directerr").textContent = ""; $("status").textContent = "DIRECT · " + store.get("typesafe_base_url"); loadModels();
-}
-function clearKey() { store.del("typesafe_api_key"); $("apikey").value = ""; $("status").textContent = "DIRECT · 키 없음"; }
 async function apiEvaluate(body) {
-  if (MODE === "server") {
-    const r = await fetch("/api/evaluate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    return [r, await r.json()];
-  }
-  const key = store.get("typesafe_api_key"); if (!key) throw new Error("API 키를 먼저 저장하세요.");
-  const t0 = performance.now();
-  let r;
-  try {
-    r = await fetch(store.get("typesafe_base_url") + "/v1/systemone", { method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
-      body: JSON.stringify({ state: body.state, questions: body.questions, model: body.model || "jev-latest" }) });
-  } catch (e) {
-    throw new Error("브라우저에서 직접 호출이 실패했습니다 (네트워크 또는 CORS 차단). TypeSafe API가 브라우저 origin을 허용하지 않으면 이 모드는 쓸 수 없고, 서버 방식(Codespaces/Render)을 써야 합니다. 원인: " + e.message);
-  }
-  const data = await r.json().catch(() => ({}));
-  if (r.ok) { data._latency_ms = Math.round(performance.now() - t0); data._mock = false; }
-  return [r, data];
+  const r = await fetch("/api/evaluate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  return [r, await r.json()];
 }
-async function apiModels() {
-  if (MODE === "server") return (await (await fetch("/api/models")).json()).models || [];
-  const key = store.get("typesafe_api_key"); if (!key) return [];
-  const r = await fetch(store.get("typesafe_base_url") + "/v1/models", { headers: { "Authorization": "Bearer " + key } });
-  return r.ok ? ((await r.json()).models || []) : [];
-}
+async function apiModels() { return (await (await fetch("/api/models")).json()).models || []; }
 async function loadModels() {
   try {
     const sel = $("model"); while (sel.options.length > 1) sel.remove(1);
     for (const x of await apiModels()) { const o = document.createElement("option"); o.value = x.name; o.textContent = `${x.name} — ${x.description}`; sel.appendChild(o); }
-  } catch (e) { $("directerr").textContent = "모델 목록 조회 실패: " + e.message; }
+  } catch (e) { $("err").textContent = "모델 목록 조회 실패: " + e.message; }
 }
 
 function loadPreset(name) {
@@ -298,16 +257,11 @@ function render(data, questions) {
   for (const n of Object.keys(PRESETS)) { const o = document.createElement("option"); o.textContent = o.value = n; $("preset").appendChild(o); }
   $("preset").onchange = e => loadPreset(e.target.value);
   loadPreset(Object.keys(PRESETS)[0]);
-  let s = null;
-  try { const r = await fetch("/api/status", { headers: { "Accept": "application/json" } }); if (r.ok && (r.headers.get("content-type") || "").includes("json")) s = await r.json(); } catch {}
-  if (s) {
+  try {
+    const s = await (await fetch("/api/status")).json();
     const b = $("status"); b.textContent = s.mock ? "MOCK 모드 — 키 없음, 답은 무작위" : `LIVE · ${s.base_url}`; b.className = "badge" + (s.mock ? " mock" : "");
     if (s.mock) $("mockhelp").hidden = false;
-  } else {
-    MODE = "direct"; $("direct").hidden = false;
-    $("apikey").value = store.get("typesafe_api_key"); $("baseurl").value = store.get("typesafe_base_url") || "https://api.typesafe.ai";
-    $("status").textContent = store.get("typesafe_api_key") ? "DIRECT · " + $("baseurl").value : "DIRECT · 키 없음";
-  }
+  } catch (e) { $("status").textContent = "서버 상태 확인 실패"; }
   loadModels();
 })();
 </script>

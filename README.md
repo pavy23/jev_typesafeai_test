@@ -31,13 +31,12 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 - `.claude/settings.json` — 프로젝트 범위 플러그인 선언(`extraKnownMarketplaces` + `enabledPlugins`). 로컬에서는 `claude plugin install typesafe@typesafe-ai` 후 `/typesafe:typesafe-ai` 로 호출
 - `.claude/skills/typesafe-ai/` — 같은 SKILL.md 의 고정 사본(v0.5.7, MIT). 클라우드/새 세션에서도 `/typesafe-ai` 로 바로 사용 가능
 
-## 브라우저에서 바로 써보기 — 3가지 방법
+## 브라우저에서 바로 써보기 — 2가지 방법
 
 | | 클릭하면 | 비공개? | 키 위치 | 비고 |
 |---|---|---|---|---|
 | **A. Render** (권장) | 바로 웹페이지 (첫 접속 시 ~1분 깨어남) | 비밀번호 로그인 | 서버 | Render 계정(GitHub 로그인) 필요, 무료 |
-| **B. GitHub Pages** | 바로 웹페이지 | ✗ 페이지 URL은 공개 | 내 브라우저 localStorage | TypeSafe API가 브라우저 CORS를 허용해야 동작(미확인). 무료 계정은 공개 repo만 |
-| **C. Codespaces** | VS Code → 8000 포트 탭 | 소유자만 | Codespaces secret | 계정 불필요, 무료 120h/월 |
+| **B. Codespaces** | VS Code → 8000 포트 탭 | 소유자만 | Codespaces secret | 계정 불필요, 무료 120h/월 |
 
 ### A. Render — 한 번 배포하면 URL 하나로 접속
 
@@ -49,14 +48,14 @@ SDK 없이 확인하려면 `trial/raw_http.sh` (curl) 를 사용하세요.
 
 무료 인스턴스는 15분 유휴 후 잠들고 다음 접속 때 ~1분 걸려 깹니다. 브랜치 push 마다 자동 재배포.
 
-### B. GitHub Pages — 서버 없이 정적 페이지
+### 왜 GitHub Pages(서버 없는 정적 페이지)는 안 되나
 
-저장소 Settings → **Pages** → Source 를 **GitHub Actions** 로 바꾸면 `.github/workflows/pages.yml` 이 `webapp/static/` 을
-`https://pavy23.github.io/jev_typesafeai_test/` 로 올립니다. 페이지가 서버 없음을 감지해 **직접 호출 모드**로 전환되고,
-키 입력칸이 나타납니다(브라우저 localStorage 에만 저장). 첫 실행에서 "CORS 차단" 오류가 나오면 TypeSafe 가 브라우저 직접 호출을
-허용하지 않는 것이므로 A 또는 C 를 쓰세요.
+GitHub Actions 러너에서 직접 확인했습니다(`.github/workflows/cors-check.yml`, Actions 탭에서 재실행 가능):
+`Origin: https://pavy23.github.io` 로 보낸 CORS preflight 에 `api.typesafe.ai` 가 **`HTTP 400 "Disallowed CORS origin"`** 을 돌려주고
+`access-control-allow-origin` 헤더가 없습니다(허용 헤더 목록에 `X-Dashboard-JWT` 가 있는 것으로 보아 TypeSafe 자체 대시보드 origin 만 허용).
+즉 **브라우저가 API 를 직접 부를 수 없고 반드시 서버를 거쳐야** 합니다 — TypeSafe 스킬 문서의 "credentials server-side" 지침과 같은 결론입니다.
 
-### C. GitHub Codespaces
+### B. GitHub Codespaces
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/pavy23/jev_typesafeai_test?quickstart=1&ref=claude/typesafeai-trial-vt2wg9)
 
@@ -88,9 +87,9 @@ API 키는 서버(`webapp/app.py`)에만 있고 브라우저로는 가지 않습
 - `tests/test_mock_systemone.py` — `/v1/systemone` 로컬 mock 으로 요청 스키마·응답 파싱을 검증
 - `.env.example` — 환경변수 템플릿. **실제 키는 절대 커밋하지 않습니다.**
 - `.devcontainer/` — Codespaces 설정: Python 3.11 이미지, 의존성 설치, 8000 포트 자동 포워딩, 추천 secret `TYPESAFE_API_KEY`
-- `webapp/` — FastAPI 백엔드 + 단일 HTML 플레이그라운드(서버 모드 / 정적 직접호출 모드 자동 전환, `PLAYGROUND_PASSWORD` 로 Basic 인증)
+- `webapp/` — FastAPI 백엔드 + 단일 HTML 플레이그라운드(`PLAYGROUND_PASSWORD` 설정 시 Basic 인증)
 - `render.yaml` — Render 원클릭 배포 Blueprint
-- `.github/workflows/pages.yml` — GitHub Pages 배포
+- `.github/workflows/cors-check.yml` — TypeSafe API 의 브라우저 CORS 허용 여부를 러너에서 확인(결과: 불허)
 
 ## 검증된 API 계약 (출처)
 
